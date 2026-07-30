@@ -1,0 +1,8 @@
+$secureKey = Read-Host "Enter your Groq API key" -AsSecureString
+$dir = "D:\CMPE PROJECT - GEMINI\PRODUCTION-READY APP-LOCAL\CMPE-Local-Windows\.streamlit"
+New-Item -ItemType Directory -Path $dir -Force | Out-Null
+$ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureKey)
+$apiKey = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($ptr)
+[System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr)
+Set-Content -Path "$dir\secrets.toml" -Value "GROQ_API_KEY = `"$apiKey`"" -Encoding UTF8
+Write-Host "`nDone! Created: $dir\secrets.toml" -ForegroundColor Green
