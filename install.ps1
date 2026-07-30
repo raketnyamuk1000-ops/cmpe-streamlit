@@ -1,19 +1,20 @@
 # CMPE Bootstrap Installer
 $ErrorActionPreference = "Stop"
 
-$repoOwner = "raketnyamuk1000-ops"   # <-- CHANGE THESE TWO LINES
-$repoName  = "cmpe-streamlit"        # <-- BEFORE PUSHING TO GITHUB
+$repoOwner = "raketnyamuk1000-ops"
+$repoName  = "cmpe-streamlit"
 $branch    = "main"
 
 $zipUrl     = "https://github.com/$repoOwner/$repoName/archive/refs/heads/$branch.zip"
 $tempZip    = "$env:TEMP\cmpe.zip"
-$installDir = "$env:USERPROFILE\CMPE-Online"
+$timestamp  = Get-Date -Format "yyyyMMdd-HHmmss"
+$installDir = "$env:USERPROFILE\CMPE-Online\$timestamp"
 
 Write-Host "Downloading CMPE from GitHub..." -ForegroundColor Cyan
 Invoke-WebRequest -Uri $zipUrl -OutFile $tempZip -UseBasicParsing
 
-Write-Host "Extracting..." -ForegroundColor Cyan
-if (Test-Path $installDir) { Remove-Item $installDir -Recurse -Force }
+Write-Host "Extracting to $installDir..." -ForegroundColor Cyan
+New-Item -ItemType Directory -Path $installDir -Force | Out-Null
 Expand-Archive -Path $tempZip -DestinationPath $installDir -Force
 
 $folder = Get-ChildItem -Path $installDir -Directory | Select-Object -First 1
@@ -26,10 +27,14 @@ if (!(Get-Command python -ErrorAction SilentlyContinue)) {
     exit 1
 }
 
-Write-Host "Setting up environment..." -ForegroundColor Cyan
+Write-Host "Creating virtual environment..." -ForegroundColor Cyan
 python -m venv venv
+
+Write-Host "Activating environment..." -ForegroundColor Cyan
 & .\venv\Scripts\Activate.ps1
-pip install -q -r requirements.txt
+
+Write-Host "Installing dependencies (this may take 2-5 minutes)..." -ForegroundColor Cyan
+pip install -r requirements.txt
 
 Write-Host "`nGroq API key required." -ForegroundColor Yellow
 $secureKey = Read-Host "Enter your Groq API key" -AsSecureString
