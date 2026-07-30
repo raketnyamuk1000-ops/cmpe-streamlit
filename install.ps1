@@ -1,4 +1,4 @@
-﻿# CMPE Bootstrap Installer
+# CMPE Bootstrap Installer
 $ErrorActionPreference = "Stop"
 
 $repoOwner = "raketnyamuk1000-ops"   # <-- CHANGE THESE TWO LINES
